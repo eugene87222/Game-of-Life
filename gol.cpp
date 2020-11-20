@@ -1,18 +1,19 @@
 #if __has_include(<bits/stdc++.h>)
-#include <bits/stdc++.h>
+#   include <bits/stdc++.h>
 #else
-#include <chrono>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <fstream>
-#include <iostream>
-#include <string>
-#include <thread>
-#include <vector>
+#   include <chrono>
+#   include <cstdio>
+#   include <cstdlib>
+#   include <cstring>
+#   include <fstream>
+#   include <iostream>
+#   include <string>
+#   include <thread>
+#   include <vector>
 #endif
 
 #include <ncurses.h>
+
 using namespace std;
 
 vector<vector<int>> board;
@@ -33,13 +34,15 @@ void sleepClear(int millisecond) {
 }
 
 void generateBoard(int height, int width) {
+    // 0 for dead
+    // 1 for alive
     srand(time(NULL));
     board.push_back(vector<int>(width+2, 0));
     for(int i = 1; i < height+1; i++) {
         board.push_back(vector<int>(width+2, 0));
         for(int j = 1; j < width+1; j++) {
             int score = rand()%100 + 1;
-            if(score >= 60) board[i][j] = 0;
+            if(score >= 50) board[i][j] = 0;
             else board[i][j] = 1;
         }
     }
@@ -92,7 +95,7 @@ int main(int argc, char *argv[]) {
     while(1) {
         draw(height, width);
         update(height, width);
-        sleepClear(20);
+        sleepClear(150);
     }
     return 0;
 }
