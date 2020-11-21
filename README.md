@@ -15,15 +15,14 @@ $ make
 ### Run
 ```sh
 $ ./gol --help
--h, --height <h>       board height (default: number of rows of terminal)
--w, --width <w>        board width (default: number of columns of terminal)
--m, --millisecond <m>  refresh interval (default: 150)
---help                 print help message
+
+Use left/right arrow to decrease/increase the time interval.
+Press "p" or spacebar to pause
+Press "r" to re-generate the board
+Press "q" to stop the program
 ```
 
 ```sh
-# Example
-$ ./gol --height 30 --width 40 -m 150
+# have fun :)
+$ ./gol
 ```
-
-> Notice: since the board will be framed up with a box, the final height and width to be displayed is height+2 and width+2.  
