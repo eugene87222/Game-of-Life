@@ -28,9 +28,10 @@ vector<vector<int>> new_board;
 
 void printHelp() {
     cout <<
-        "-h, --height <h>:          board height\n"
-        "-w, --width <w>:           board width\n"
-        "-m, --millisecond <m>:     refresh interval\n";
+        "-h, --height <h>        board height\n"
+        "-w, --width <w>         board width\n"
+        "-m, --millisecond <m>   refresh interval\n"
+        "--help                  print help message\n";
     exit(1);
 }
 
@@ -105,6 +106,7 @@ int main(int argc, char *argv[]) {
             {"height", required_argument, nullptr, 'h'},
             {"width", required_argument, nullptr, 'w'},
             {"millisecond", required_argument, nullptr, 'm'},
+            {"help", no_argument, nullptr, 'p'},
             {nullptr, no_argument, nullptr, 0}
     };
     while(true) {
@@ -122,6 +124,7 @@ int main(int argc, char *argv[]) {
         case 'm':
             millisecond = stoi(optarg);
             break;
+        case 'p':
         case '?':
         default:
             printHelp();
