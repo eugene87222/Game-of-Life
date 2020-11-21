@@ -5,10 +5,9 @@
 #include <fstream>
 #include <getopt.h>
 #include <iostream>
+#include <locale.h>
 #include <ncurses.h>
 #include <string>
-#include <sys/ioctl.h>
-#include <thread>
 #include <unistd.h>
 #include <vector>
 
@@ -17,28 +16,16 @@ using namespace std;
 vector<vector<int>> board;
 vector<vector<int>> new_board;
 
-// int toInt(char *str) {
-//     int result = 0;
-//     int len = strlen(str);
-//     for(int i = 0; i < len; i++) {
-//         result = result * 10 + (str[i] - '0');
-//     }
-//     return result;
-// }
 
 void printHelp() {
     cout <<
-        "-h, --height <h>        board height\n"
-        "-w, --width <w>         board width\n"
-        "-m, --millisecond <m>   refresh interval\n"
-        "--help                  print help message\n";
-    exit(1);
+        "\nUse left/right arrow to decrease/increase the time interval.\n"
+        "Press \"p\" or spacebar to pause\n"
+        "Press \"r\" to re-generate the board\n"
+        "Press \"q\" to stop the program\n";
+    exit(0);
 }
 
-void sleepClear(int millisecond) {
-    this_thread::sleep_for(chrono::milliseconds(millisecond));
-    system("clear");
-}
 
 void generateBoard(int height, int width) {
     // 0 for dead
@@ -56,21 +43,6 @@ void generateBoard(int height, int width) {
     board.push_back(vector<int>(width+2, 0));
 }
 
-void draw(int height, int width) {
-    for(int i = 0; i <= height+1; i++) {
-        for(int j = 0; j <= width+1; j++) {
-            if(i == 0 && j == 0) cout << "╔";
-            else if(i == 0 && j == width+1) cout << "╗";
-            else if(i == height+1 && j == 0) cout << "╚";
-            else if(i == height+1 && j == width+1) cout << "╝";
-            else if(i == 0 || i == height+1) cout << "══";
-            else if(j == 0 || j == width+1) cout << "║";
-            else if(board[i][j] == 0) cout << "  ";
-            else cout << "██";
-        }
-        cout << endl;
-    }
-}
 
 void update(int height, int width) {
     new_board = board;
@@ -94,19 +66,45 @@ void update(int height, int width) {
     board = new_board;
 }
 
-int main(int argc, char *argv[]) {
-    int height, width, millisecond = 150;
-    struct winsize w;
-    ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
-    height = w.ws_row - 3;
-    width = (w.ws_col - 2) / 2;
 
-    const char* const short_opts = "h:w:m:";
+void status(char *status_background, int gen, int millisecond) {
+	mvprintw(0, 2, status_background);
+	mvprintw(0, 3, "Iter:%4d,", gen);
+	mvprintw(0, 14, "Interval:%4dms", millisecond);
+} 
+
+
+void draw(int height, int width, char *status_background, int gen, int millisecond) {
+	int not_first;
+    for(int i=0; i<=height+1; i++) {
+		for(int j=0; j<=width+1; j++) {
+            not_first = (int)(j>0);
+            if(i==0 && j==0) mvaddstr(i, j, "╔");
+            else if(i==height+1 && j==0) mvaddstr(i, j, "╚");
+            else if(i==0 && j==width+1) mvaddstr(i, j*2-not_first, "╗");
+            else if(i==height+1 && j==width+1) mvaddstr(i, j*2-not_first, "╝");
+            else if(i==0 || i==height+1) mvaddstr(i, j*2-not_first, "══");
+            else if(j==0 || j==width+1) mvaddstr(i, j*2-not_first, "║");
+            else if(board[i][j] == 0) mvaddstr(i, j*2-not_first, "  ");
+            else mvaddstr(i, j*2-not_first, "██");
+		}
+    }
+	status(status_background, gen, millisecond);
+	refresh();
+}
+
+
+void goodBye() {
+    clear();
+	endwin();
+    exit(0);
+}
+
+
+int main(int argc, char *argv[]) {
+    const char* const short_opts = "h";
     const option long_opts[] = {
-            {"height", required_argument, nullptr, 'h'},
-            {"width", required_argument, nullptr, 'w'},
-            {"millisecond", required_argument, nullptr, 'm'},
-            {"help", no_argument, nullptr, 'p'},
+            {"help", no_argument, nullptr, 'h'},
             {nullptr, no_argument, nullptr, 0}
     };
     while(true) {
@@ -116,15 +114,6 @@ int main(int argc, char *argv[]) {
 
         switch(opt) {
         case 'h':
-            height = stoi(optarg);
-            break;
-        case 'w':
-            width = stoi(optarg);
-            break;
-        case 'm':
-            millisecond = stoi(optarg);
-            break;
-        case 'p':
         case '?':
         default:
             printHelp();
@@ -132,12 +121,64 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    setlocale(LC_ALL,"");
+    initscr();
+	clear();
+	noecho();
+	cbreak();
+	keypad(stdscr, TRUE);
+	curs_set(0);
+	nodelay(stdscr, TRUE);
+
+    int rows, cols, height, width, millisecond;
+	getmaxyx(stdscr, rows, cols);
+    height = rows - 2;
+    width = (cols-2) / 2;
+    millisecond = 100;
+
+    char status_background[28];
+	memset(status_background, ' ', 28);
+
+
     generateBoard(height, width);
-    sleepClear(0);
-    while(1) {
-        draw(height, width);
-        update(height, width);
-        sleepClear(millisecond);
-    }
+
+    int keyin, gen = 0;
+    bool pause = false;
+	while(true) {
+		keyin = getch();
+		switch(keyin) {
+		case 'q':
+		case 'Q':
+            goodBye();
+            break;					
+		case 'r':
+		case 'R':
+            generateBoard(height, width);
+			break;
+        case 'p':
+        case 'P':
+        case KEY_SREPLACE:
+            pause = !pause;
+            if(pause) mvprintw(height+1, 3, "/ PAUSED /");
+			else mvprintw(height+1, 3, "══════════");
+            break;
+		case KEY_LEFT:
+            if(millisecond > 9) millisecond -= 10;
+			break;
+		case KEY_RIGHT:
+            millisecond += 10;
+			break;
+		default:
+            break;
+		}
+
+        if(!pause) {
+            draw(height, width, status_background, gen, millisecond);
+            update(height, width);
+            gen++;
+        }
+        usleep(millisecond*1000);
+	}
+
     return 0;
 }

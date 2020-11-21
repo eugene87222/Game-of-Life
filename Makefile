@@ -1,9 +1,11 @@
 CC=g++
-
-all: main
+CFLAGS= -O2 -pipe -fomit-frame-pointer
+# WARN= -W -Wall
+# LIBS:= ncurses
+LIBS:= ncursesw
 
 main: gol.cpp
-	$(CC) gol.cpp -o gol
+	$(CC) ${CFLAGS} gol.cpp -o gol -l${LIBS}
 
 clean:
 	rm -f gol
