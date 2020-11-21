@@ -136,9 +136,9 @@ int main(int argc, char *argv[]) {
     width = (cols-2) / 2;
     millisecond = 100;
 
-    char status_background[28];
-	memset(status_background, ' ', 28);
-
+    char status_background[29];
+	memset(status_background, ' ', 29);
+	status_background[28] = '\0';
 
     generateBoard(height, width);
 
