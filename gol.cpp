@@ -1,31 +1,37 @@
-#if __has_include(<bits/stdc++.h>)
-#   include <bits/stdc++.h>
-#else
-#   include <chrono>
-#   include <cstdio>
-#   include <cstdlib>
-#   include <cstring>
-#   include <fstream>
-#   include <iostream>
-#   include <string>
-#   include <thread>
-#   include <vector>
-#endif
-
+#include <chrono>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <fstream>
+#include <getopt.h>
+#include <iostream>
 #include <ncurses.h>
+#include <string>
+#include <sys/ioctl.h>
+#include <thread>
+#include <unistd.h>
+#include <vector>
 
 using namespace std;
 
 vector<vector<int>> board;
 vector<vector<int>> new_board;
 
-int toInt(char *str) {
-    int result = 0;
-    int len = strlen(str);
-    for(int i = 0; i < len; i++) {
-        result = result * 10 + (str[i] - '0');
-    }
-    return result;
+// int toInt(char *str) {
+//     int result = 0;
+//     int len = strlen(str);
+//     for(int i = 0; i < len; i++) {
+//         result = result * 10 + (str[i] - '0');
+//     }
+//     return result;
+// }
+
+void printHelp() {
+    cout <<
+        "-h, --height <h>:          board height\n"
+        "-w, --width <w>:           board width\n"
+        "-m, --millisecond <m>:     refresh interval\n";
+    exit(1);
 }
 
 void sleepClear(int millisecond) {
@@ -88,14 +94,47 @@ void update(int height, int width) {
 }
 
 int main(int argc, char *argv[]) {
-    int height = toInt(argv[1]);
-    int width = toInt(argv[2]);
+    int height, width, millisecond = 150;
+    struct winsize w;
+    ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+    height = w.ws_row - 3;
+    width = (w.ws_col - 2) / 2;
+
+    const char* const short_opts = "h:w:m:";
+    const option long_opts[] = {
+            {"height", required_argument, nullptr, 'h'},
+            {"width", required_argument, nullptr, 'w'},
+            {"millisecond", required_argument, nullptr, 'm'},
+            {nullptr, no_argument, nullptr, 0}
+    };
+    while(true) {
+        const auto opt = getopt_long(argc, argv, short_opts, long_opts, nullptr);
+
+        if(opt == -1) break;
+
+        switch(opt) {
+        case 'h':
+            height = stoi(optarg);
+            break;
+        case 'w':
+            width = stoi(optarg);
+            break;
+        case 'm':
+            millisecond = stoi(optarg);
+            break;
+        case '?':
+        default:
+            printHelp();
+            break;
+        }
+    }
+
     generateBoard(height, width);
     sleepClear(0);
     while(1) {
         draw(height, width);
         update(height, width);
-        sleepClear(150);
+        sleepClear(millisecond);
     }
     return 0;
 }
