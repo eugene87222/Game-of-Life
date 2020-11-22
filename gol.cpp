@@ -53,92 +53,92 @@ void randomBoard(int height, int width) {
 void Gosperglidergun(int height, int width) {
     emptyBoard(height, width);
 
-    board[2][4] = 1;
-    board[2][5] = 1;
-    board[3][4] = 1;
-    board[3][5] = 1;
+    board[4][2] = 1;
+    board[5][2] = 1;
+    board[4][3] = 1;
+    board[5][3] = 1;
 
-    board[13][2] = 1;
-    board[13][3] = 1;
-    board[13][7] = 1;
-    board[13][8] = 1;
-    board[15][3] = 1;
-    board[15][7] = 1;
-    board[16][4] = 1;
-    board[16][5] = 1;
-    board[16][6] = 1;
-    board[17][4] = 1;
-    board[17][5] = 1;
-    board[17][6] = 1;
+    board[2][13] = 1;
+    board[3][13] = 1;
+    board[7][13] = 1;
+    board[8][13] = 1;
+    board[3][15] = 1;
+    board[7][15] = 1;
+    board[4][16] = 1;
+    board[5][16] = 1;
+    board[6][16] = 1;
+    board[4][17] = 1;
+    board[5][17] = 1;
+    board[6][17] = 1;
 
-    board[20][7] = 1;
-    board[21][6] = 1;
-    board[21][7] = 1;
-    board[21][8] = 1;
-    board[22][5] = 1;
-    board[22][9] = 1;
-    board[23][7] = 1;
-    board[24][4] = 1;
-    board[24][10] = 1;
-    board[25][4] = 1;
-    board[25][10] = 1;
-    board[26][5] = 1;
-    board[26][9] = 1;
-    board[27][6] = 1;
-    board[27][7] = 1;
-    board[27][8] = 1;
+    board[7][20] = 1;
+    board[6][21] = 1;
+    board[7][21] = 1;
+    board[8][21] = 1;
+    board[5][22] = 1;
+    board[9][22] = 1;
+    board[7][23] = 1;
+    board[4][24] = 1;
+    board[10][24] = 1;
+    board[4][25] = 1;
+    board[10][25] = 1;
+    board[5][26] = 1;
+    board[9][26] = 1;
+    board[6][27] = 1;
+    board[7][27] = 1;
+    board[8][27] = 1;
 
-    board[36][6] = 1;
-    board[36][7] = 1;
-    board[37][6] = 1;
-    board[37][7] = 1;
+    board[6][36] = 1;
+    board[7][36] = 1;
+    board[6][37] = 1;
+    board[7][37] = 1;
 }
 
 
 void Simkinglidergun(int height, int width) {
     emptyBoard(height, width);
 
-    board[2][21] = 1;
-    board[2][22] = 1;
-    board[3][21] = 1;
-    board[3][22] = 1;
+    board[21][2] = 1;
+    board[22][2] = 1;
+    board[21][3] = 1;
+    board[22][3] = 1;
 
-    board[6][18] = 1;
-    board[6][19] = 1;
-    board[7][18] = 1;
-    board[7][19] = 1;
+    board[18][6] = 1;
+    board[19][6] = 1;
+    board[18][7] = 1;
+    board[19][7] = 1;
 
-    board[9][21] = 1;
-    board[9][22] = 1;
-    board[10][21] = 1;
-    board[10][22] = 1;
+    board[21][9] = 1;
+    board[22][9] = 1;
+    board[21][10] = 1;
+    board[22][10] = 1;
 
-    board[22][4] = 1;
-    board[22][5] = 1;
-    board[23][3] = 1;
-    board[23][5] = 1;
-    board[24][3] = 1;
-    board[25][2] = 1;
-    board[25][3] = 1;
+    board[4][22] = 1;
+    board[5][22] = 1;
+    board[3][23] = 1;
+    board[5][23] = 1;
+    board[3][24] = 1;
+    board[2][25] = 1;
+    board[3][25] = 1;
 
-    board[23][10] = 1;
-    board[23][11] = 1;
-    board[23][12] = 1;
-    board[24][10] = 1;
-    board[24][13] = 1;
-    board[25][10] = 1;
-    board[25][13] = 1;
-    board[27][13] = 1;
-    board[28][9] = 1;
-    board[28][13] = 1;
-    board[29][10] = 1;
-    board[29][12] = 1;
-    board[30][11] = 1;
+    board[10][23] = 1;
+    board[11][23] = 1;
+    board[12][23] = 1;
+    board[10][24] = 1;
+    board[13][24] = 1;
+    board[10][25] = 1;
+    board[13][25] = 1;
+    board[13][27] = 1;
+    board[9][28] = 1;
+    board[13][28] = 1;
+    board[10][29] = 1;
+    board[12][29] = 1;
+    board[11][30] = 1;
 
-    board[33][10] = 1;
-    board[33][11] = 1;
-    board[34][10] = 1;
-    board[34][11] = 1;
+    board[10][33] = 1;
+    board[11][33] = 1;
+    board[10][34] = 1;
+    board[11][34] = 1;
 }
 
 
@@ -270,8 +270,8 @@ int main(int argc, char *argv[]) {
 	memset(status_background, ' ', 29);
 	status_background[28] = '\0';
 
-    if(gosper && height>=38 && width>=11) Gosperglidergun(height, width);
-    else if(simkin && height>=35 && width>=24) Simkinglidergun(height, width);
+    if(gosper && height>=11 && width>=38) Gosperglidergun(height, width);
+    else if(simkin && height>=24 && width>=35) Simkinglidergun(height, width);
     else randomBoard(height, width);
 
     int keyin, gen = 0;
