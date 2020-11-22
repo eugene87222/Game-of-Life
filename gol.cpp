@@ -30,20 +30,115 @@ void printHelp() {
 }
 
 
-void generateBoard(int height, int width) {
-    // 0 for dead
-    // 1 for alive
+void emptyBoard(int height, int width) {
+    board = vector<vector<int>>(height+2, vector<int>(width+2, 0));
+}
+
+
+void randomBoard(int height, int width) {
+    emptyBoard(height, width);
     srand(time(NULL));
-    board.push_back(vector<int>(width+2, 0));
-    for(int i = 1; i < height+1; i++) {
-        board.push_back(vector<int>(width+2, 0));
-        for(int j = 1; j < width+1; j++) {
+    for(int i=1; i<height+1; i++) {
+        for(int j=1; j<width+1; j++) {
             int score = rand()%100 + 1;
+            // 0 for dead
+            // 1 for alive
             if(score >= 50) board[i][j] = 0;
             else board[i][j] = 1;
         }
     }
-    board.push_back(vector<int>(width+2, 0));
+}
+
+
+void Gosperglidergun(int height, int width) {
+    emptyBoard(height, width);
+
+    board[2][4] = 1;
+    board[2][5] = 1;
+    board[3][4] = 1;
+    board[3][5] = 1;
+
+    board[13][2] = 1;
+    board[13][3] = 1;
+    board[13][7] = 1;
+    board[13][8] = 1;
+    board[15][3] = 1;
+    board[15][7] = 1;
+    board[16][4] = 1;
+    board[16][5] = 1;
+    board[16][6] = 1;
+    board[17][4] = 1;
+    board[17][5] = 1;
+    board[17][6] = 1;
+
+    board[20][7] = 1;
+    board[21][6] = 1;
+    board[21][7] = 1;
+    board[21][8] = 1;
+    board[22][5] = 1;
+    board[22][9] = 1;
+    board[23][7] = 1;
+    board[24][4] = 1;
+    board[24][10] = 1;
+    board[25][4] = 1;
+    board[25][10] = 1;
+    board[26][5] = 1;
+    board[26][9] = 1;
+    board[27][6] = 1;
+    board[27][7] = 1;
+    board[27][8] = 1;
+
+    board[36][6] = 1;
+    board[36][7] = 1;
+    board[37][6] = 1;
+    board[37][7] = 1;
+}
+
+
+void Simkinglidergun(int height, int width) {
+    emptyBoard(height, width);
+
+    board[2][21] = 1;
+    board[2][22] = 1;
+    board[3][21] = 1;
+    board[3][22] = 1;
+
+    board[6][18] = 1;
+    board[6][19] = 1;
+    board[7][18] = 1;
+    board[7][19] = 1;
+
+    board[9][21] = 1;
+    board[9][22] = 1;
+    board[10][21] = 1;
+    board[10][22] = 1;
+
+    board[22][4] = 1;
+    board[22][5] = 1;
+    board[23][3] = 1;
+    board[23][5] = 1;
+    board[24][3] = 1;
+    board[25][2] = 1;
+    board[25][3] = 1;
+
+    board[23][10] = 1;
+    board[23][11] = 1;
+    board[23][12] = 1;
+    board[24][10] = 1;
+    board[24][13] = 1;
+    board[25][10] = 1;
+    board[25][13] = 1;
+    board[27][13] = 1;
+    board[28][9] = 1;
+    board[28][13] = 1;
+    board[29][10] = 1;
+    board[29][12] = 1;
+    board[30][11] = 1;
+
+    board[33][10] = 1;
+    board[33][11] = 1;
+    board[34][10] = 1;
+    board[34][11] = 1;
 }
 
 
@@ -126,8 +221,11 @@ void goodBye() {
 
 
 int main(int argc, char *argv[]) {
+    bool gosper=false, simkin=false;
     const char* const short_opts = "h";
     const option long_opts[] = {
+            {"gosper", no_argument, nullptr, 'g'},
+            {"simkin", no_argument, nullptr, 's'},
             {"help", no_argument, nullptr, 'h'},
             {nullptr, no_argument, nullptr, 0}
     };
@@ -137,6 +235,12 @@ int main(int argc, char *argv[]) {
         if(opt == -1) break;
 
         switch(opt) {
+        case 'g':
+            gosper = true;
+            break;
+        case 's':
+            simkin = true;
+            break;
         case 'h':
         case '?':
         default:
@@ -166,7 +270,9 @@ int main(int argc, char *argv[]) {
 	memset(status_background, ' ', 29);
 	status_background[28] = '\0';
 
-    generateBoard(height, width);
+    if(gosper && height>=38 && width>=11) Gosperglidergun(height, width);
+    else if(simkin && height>=35 && width>=24) Simkinglidergun(height, width);
+    else randomBoard(height, width);
 
     int keyin, gen = 0;
     bool pause = false;
@@ -179,7 +285,7 @@ int main(int argc, char *argv[]) {
             break;					
 		case 'r':
 		case 'R':
-            generateBoard(height, width);
+            randomBoard(height, width);
 			break;
         case 'p':
         case 'P':
