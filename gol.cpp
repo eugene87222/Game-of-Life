@@ -8,6 +8,7 @@
 #include <locale.h>
 #include <ncurses.h>
 #include <string>
+#include <thread>
 #include <unistd.h>
 #include <vector>
 
@@ -15,6 +16,8 @@ using namespace std;
 
 vector<vector<int>> board;
 vector<vector<int>> new_board;
+vector<thread> thds;
+int thd_num = 4;
 
 
 void printHelp() {
@@ -44,6 +47,27 @@ void generateBoard(int height, int width) {
 }
 
 
+void update_thd(int h_begin, int h_end, int w_begin, int w_end) {
+    for(int i = h_begin; i <= h_end; i++) {
+        for(int j = w_begin; j <= w_end; j++) {
+            int alive = board[i-1][j-1] + board[i-1][j] + board[i-1][j+1] + 
+                        board[i][j-1] + board[i][j+1] + 
+                        board[i+1][j-1] + board[i+1][j] + board[i+1][j+1];
+            if(board[i][j] == 1) {
+                if(alive != 2 && alive != 3) {
+                    new_board[i][j] = 0;
+                }
+            }
+            else {
+                if(alive == 3){
+                    new_board[i][j] = 1;
+                }
+            }
+        }
+    }
+}
+
+
 void update(int height, int width) {
     new_board = board;
     for(int i = 1; i < height+1; i++) {
@@ -67,14 +91,14 @@ void update(int height, int width) {
 }
 
 
-void status(char *status_background, int gen, int millisecond) {
+void status(char *status_background, int gen, int ms) {
 	mvprintw(0, 2, status_background);
 	mvprintw(0, 3, "Iter:%4d,", gen);
-	mvprintw(0, 14, "Interval:%4dms", millisecond);
+	mvprintw(0, 14, "Interval:%4dms", ms);
 } 
 
 
-void draw(int height, int width, char *status_background, int gen, int millisecond) {
+void draw(int height, int width, char *status_background, int gen, int ms) {
 	int not_first;
     for(int i=0; i<=height+1; i++) {
 		for(int j=0; j<=width+1; j++) {
@@ -89,7 +113,7 @@ void draw(int height, int width, char *status_background, int gen, int milliseco
             else mvaddstr(i, j*2-not_first, "██");
 		}
     }
-	status(status_background, gen, millisecond);
+	status(status_background, gen, ms);
 	refresh();
 }
 
@@ -130,11 +154,13 @@ int main(int argc, char *argv[]) {
 	curs_set(0);
 	nodelay(stdscr, TRUE);
 
-    int rows, cols, height, width, millisecond;
+    int rows, cols, height, width, ms, p_size;
 	getmaxyx(stdscr, rows, cols);
     height = rows - 2;
     width = (cols-2) / 2;
-    millisecond = 100;
+    ms = 100;
+    p_size = height / thd_num;
+    thds = vector<thread>(thd_num);
 
     char status_background[29];
 	memset(status_background, ' ', 29);
@@ -163,21 +189,29 @@ int main(int argc, char *argv[]) {
 			else mvprintw(height+1, 3, "══════════");
             break;
 		case KEY_LEFT:
-            if(millisecond > 9) millisecond -= 10;
+            if(ms > 9) ms -= 10;
 			break;
 		case KEY_RIGHT:
-            millisecond += 10;
+            ms += 10;
 			break;
 		default:
             break;
 		}
 
         if(!pause) {
-            draw(height, width, status_background, gen, millisecond);
-            update(height, width);
+            draw(height, width, status_background, gen, ms);
+            // update(height, width);
+            new_board = board;
+            for(int i=0; i<thd_num; i++) {
+                thds[i] = thread(update_thd, p_size*i+1, i==thd_num-1?height:p_size*(i+1), 1, width);
+            }
+            for(int i=0; i<thd_num; i++) {
+                thds[i].join();
+            }
+            board = new_board;
             gen++;
         }
-        usleep(millisecond*1000);
+        usleep(ms*1000);
 	}
 
     return 0;
